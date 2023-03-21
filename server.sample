@@ -1,2 +1,2 @@
-tcp	127.0.0.1:8000
-icmp	www.baidu.com
+tcp	127.0.0.1:8000	LocalHTTPServer
+icmp	www.baidu.com	CommonWebSite

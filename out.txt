@@ -1,0 +1,10 @@
+[LocalHTTPServer]
+Server: 127.0.0.1:8000
+Protocol: tcp
+Latency: 0.11 ms
+
+[CommonWebSite]
+Server: www.baidu.com
+Protocol: icmp
+Latency: 65.73 ms
+
