@@ -2,12 +2,13 @@
 ## simpleMonitor <server_list> <output> <0 | timeout> <isPrint>
 
 import sys
+import time
 
 import alib.tcp_latency as tcp_latency
 import alib.ping_latency as ping_latency
 import alib.tidyTimer as ttimer
 
-VERSION = '20230321'
+VERSION = '20230321-1'
 
 class isAlive:
 	def __init__(self, timeout=3.):
@@ -52,6 +53,7 @@ if __name__ == '__main__':
 		output_board = ''
 
 		for srv in server_list:
+			time.sleep(.5)
 			result = func_rack[srv[0]](srv[1])
 			if result == -1:
 				result_show = 'FAILED'
