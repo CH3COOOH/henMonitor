@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Monitor</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<h1>Network Monitor</h1>
+
+<button class="modal-btn" onclick="openAddServerModal()">Add a server...</button>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width: 25%;">HOST</th>
+            <th style="width: 15%;">PORT</th>
+            <th style="width: 10%;">PROTOCOL</th>
+            <th style="width: 10%;">LATENCY</th>
+            <th style="width: 10%;">STATUS</th>
+            <th style="width: 5%;">OP</th>
+            <th style="width: 15%;">ADD DATE</th>
+        </tr>
+    </thead>
+    <tbody id="serverList">
+        <!-- Server rows will be dynamically added here -->
+    </tbody>
+</table>
+
+<!-- Add Server Modal -->
+<div id="addServerModal">
+    <label for="hostInput">HOST:</label>
+    <input type="text" id="hostInput">
+
+    <label for="portInput">PORT:</label>
+    <input type="text" id="portInput" oninput="validatePortInput()">
+
+    <label for="protocolSelect">PROTOCOL:</label>
+    <select id="protocolSelect">
+        <option value="TCP">TCP</option>
+        <option value="ICMP">ICMP</option>
+    </select>
+
+    <button class="modal-btn" onclick="addServer()">OK</button>
+    <button class="modal-btn cancel-btn" onclick="closeAddServerModal()">CANCEL</button>
+</div>
+
+<script src="./action.js"></script>
+
+</body>
+</html>
