@@ -46,7 +46,7 @@ class Monitor:
 					proto, host, label = srv.split('\t')
 					self.servers[label] = [host, proto, 0]
 				except:
-					print('**Bad format in line %d. Exit.' % ctr)
+					print('**[Monitor::parse_config]Bad format in line %d. Exit.' % ctr)
 					return -1
 		return 0
 	

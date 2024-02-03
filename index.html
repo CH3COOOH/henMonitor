@@ -10,18 +10,17 @@
 
 <h1>Network Monitor</h1>
 
+<button class="modal-btn" onclick="openAddServerModal()">Poll</button>
 <button class="modal-btn" onclick="openAddServerModal()">Add a server...</button>
 
 <table>
     <thead>
         <tr>
             <th style="width: 25%;">HOST</th>
-            <th style="width: 15%;">PORT</th>
-            <th style="width: 10%;">PROTOCOL</th>
-            <th style="width: 10%;">LATENCY</th>
-            <th style="width: 10%;">STATUS</th>
-            <th style="width: 5%;">OP</th>
-            <th style="width: 15%;">ADD DATE</th>
+            <th style="width: 15%;">PROTO</th>
+            <th style="width: 15%;">LAT</th>
+            <th style="width: 30%;">DESC</th>
+            <th style="width: 15%;">OP</th>
         </tr>
     </thead>
     <tbody id="serverList">
@@ -39,11 +38,13 @@
 
     <label for="protocolSelect">PROTOCOL:</label>
     <select id="protocolSelect">
-        <option value="TCP">TCP</option>
-        <option value="ICMP">ICMP</option>
+        <option value="tcp">tcp</option>
+        <option value="icmp">icmp</option>
     </select>
+    <label for="descInput">DESCRIPTION:</label>
+    <input type="text" id="descInput">
 
-    <button class="modal-btn" onclick="addServer()">OK</button>
+    <button class="modal-btn" onclick="onclick_submit_srv()">OK</button>
     <button class="modal-btn cancel-btn" onclick="closeAddServerModal()">CANCEL</button>
 </div>
 

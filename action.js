@@ -1,32 +1,34 @@
-const socket = new WebSocket("ws://127.0.0.1:9696");
+const SERVER = "ws://127.0.0.1:9696";
+const socket = new WebSocket(SERVER);
+
+var resp = null;
 
 socket.onmessage = function(event) {
-    const s_res = event.data;
+    resp = event.data;
     try {
-        const parsedData = JSON.parse(s_res);
+        const parsedData = JSON.parse(resp);
         if (typeof parsedData === 'object' && parsedData !== null) {
-            // Server list
+            for (let label in parsedData) {
+                // [host, port, protocol, desc]
+                // servers[label] = [host, proto, 0]
+                srv_info = [parsedData[label][0], null, parsedData[label][1], label, parsedData[label][2]];
+                addServerIntoForm(srv_info, true);
+            }
         } else {
-            // Info
+            alert(resp);
         }
     } catch (error) {
         alert('Bad response.');
     }
 };
 
-function getCurrentDateTimeString() {
-    var currentDate = new Date();
+socket.addEventListener('open', (event) => {
+    console.log('WebSocket连接已建立');
+    poll();
+});
 
-    var year = currentDate.getFullYear();
-    var month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // 月份从0开始，需要加1
-    var day = currentDate.getDate().toString().padStart(2, '0');
-    var hours = currentDate.getHours().toString().padStart(2, '0');
-    var minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    var seconds = currentDate.getSeconds().toString().padStart(2, '0');
-
-    var dateTimeString = year + month + day + '-' + hours + minutes + seconds;
-
-    return dateTimeString;
+function poll() {
+    socket.send('0');
 }
 
 // Open the Add Server Modal
@@ -51,8 +53,7 @@ function validatePortInput() {
 }
 
 // Add a new server to the list
-function addServer() {
-    const timestamp = getCurrentDateTimeString();
+function getHostFromInput () {
     const host = document.getElementById('hostInput').value;
     var port;
     if (document.getElementById('portInput').value !== "") {
@@ -61,16 +62,42 @@ function addServer() {
         port = '-';
     }
     const protocol = document.getElementById('protocolSelect').value;
+    const desc = document.getElementById('descInput').value;
+    return [host, port, protocol, desc];
+}
 
-    // TODO: Use WebSocket to send data to the backend server
-
-    // Dummy code to add a new row to the table (replace this with WebSocket logic)
+function addServerIntoForm(info_array, add_from_web) {
     const table = document.getElementById('serverList');
     const newRow = table.insertRow(-1);
-    newRow.innerHTML = `<td>${host}</td><td>${port}</td><td>${protocol}</td><td>---</td><td>---</td><td><button class="modal-btn remove-btn" onclick="removeServer(this.parentNode.parentNode)">REMOVE</button></td><td>${timestamp}</td>`;
+    // Web: [host, port, protocol, desc]
+    // Poll: [host, port, protocol, desc, latency]
+    var host = info_array[0]
+    const port = info_array[1]
+    const proto = info_array[2]
+    const desc = info_array[3]
+    var lat = null;
+    if (add_from_web == true) {
+        if (info_array[4] >= 0) {
+            lat = `${(info_array[4] * 1000).toFixed(2)} ms`;
+        } else {
+            lat = 'X';
+        }
+    } else {
+        lat = '-';
+        if (proto == 'tcp') {
+            host = host + ':' + port;
+        }
+    }
+    console.log(info_array);
+    newRow.innerHTML = `<td>${host}</td><td>${proto}</td><td>${lat}</td><td>${desc}</td><td><button class="modal-btn remove-btn" onclick="removeServer(this.parentNode.parentNode)">DEL</button></td>`;
 
     // Close the modal
     closeAddServerModal();
+}
+
+function onclick_submit_srv() {
+    srv_info = getHostFromInput();
+    addServerIntoForm(srv_info, true);
 }
 
 // Remove a server from the list
