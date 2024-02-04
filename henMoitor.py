@@ -22,6 +22,7 @@ class IsAlive:
 class Monitor:
 	def __init__(self):
 		self.servers = {}
+		## {label: [host_port, protocol, latency], ...}
 		self.ia = IsAlive(timeout=3.)
 	
 	def toReport(self):
@@ -33,8 +34,9 @@ class Monitor:
 			else:
 				report += '*** Unreachable ***\n------\n'
 		return report
-	
+
 	def parse_config(self, s_config):
+		self.servers = {}
 		ctr = 0
 		for srv in s_config.split('\n'):
 			ctr += 1
@@ -46,16 +48,21 @@ class Monitor:
 					proto, host, label = srv.split('\t')
 					self.servers[label] = [host, proto, 0]
 				except:
-					print('**[Monitor::parse_config]Bad format in line %d. Exit.' % ctr)
+					print('**[Monitor::parse_config] Bad format in line %d. Exit.' % ctr)
 					return -1
 		return 0
 	
 	def poll(self, isPrint=False):
 		for label in self.servers.keys():
-			if self.servers[label][1] == 'icmp':
-				self.servers[label][2] = self.ia.icmp(self.servers[label][0])
-			elif self.servers[label][1] == 'tcp':
-				self.servers[label][2] = self.ia.tcp(self.servers[label][0])
+			try:
+				if self.servers[label][1] == 'icmp':
+					self.servers[label][2] = self.ia.icmp(self.servers[label][0])
+				elif self.servers[label][1] == 'tcp':
+					self.servers[label][2] = self.ia.tcp(self.servers[label][0])
+			except:
+			## --- Bad protocol or port settings ---
+				print('**[Monitor::poll] Unknown protocol or bad input in label <%s>.' % label)
+				self.servers[label][2] = '???'
 		if isPrint == True:
 			print(self.toReport())
 		return self.servers

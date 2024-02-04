@@ -3,6 +3,7 @@ import json
 from websocket_server import WebsocketServer
 import alib.pr as apr
 from henMoitor import Monitor
+from config_editor import update_srv_list
 
 class WServer:
 	def __init__(self, host, port, log_level, fpath_config):
@@ -20,7 +21,9 @@ class WServer:
 
 	def _msgReceived(self, client, server, msg):
 		if msg == '0':
+		## --- Poll request ---
 			try:
+				self.log.print('Reload config...', 0)
 				with open(self.fpath_config, 'r') as o:
 					if self.hmtr.parse_config(o.read()) == -1:
 						self.log('Unable to parse the config.', 3)
@@ -35,9 +38,21 @@ class WServer:
 			self.hmtr.poll()
 			self._send_msg(server, client, json.dumps(self.hmtr.dumps_srv()))
 		else:
-			self.log.print('Bad request from %s.' % client['address'], 2)
-			self._send_msg(server, client, 'BAD_REQ')
-		# self._close_session(client)
+		## --- Parse JSON ---
+			try:
+				req_js = json.loads(msg)
+				## {op: -1/0, srv: [label, host, proto]}
+				if update_srv_list(self.fpath_config, req_js['srv'][0], req_js['srv'][1], req_js['srv'][2], req_js['op']) == 0:
+					self.log.print('Server list updated. (%d)' % req_js['op'], 2)
+					self._send_msg(server, client, 'OK')
+				else:
+					self.log.print('Unable to edit the config...', 3)
+					self._send_msg(server, client, 'SRV_ERR')
+
+			except:
+				self.log.print('Bad request from %s.' % client['address'], 2)
+				self._send_msg(server, client, 'BAD_REQ')
+				# self._close_session(client)
 		return 0
 		
 	def start(self):

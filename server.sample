@@ -1,2 +1,2 @@
-tcp	127.0.0.1:8000	LocalHTTPServer
-icmp	www.baidu.com	CommonWebSite
+icmp	google.com	GOOGLE
+tcp	www.baidu.com:443	BAIDU(HTTPS)
