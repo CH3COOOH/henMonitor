@@ -5,9 +5,10 @@ import time
 
 import alib.tcp_latency as tcp_latency
 import alib.ping_latency as ping_latency
+import alib.url_check as url_check
 import alib.json as ajs
 
-VERSION = '20240201-1'
+VERSION = '20240210-1'
 
 class IsAlive:
 	def __init__(self, timeout=3.):
@@ -18,6 +19,15 @@ class IsAlive:
 
 	def tcp(self, host_port):
 		return tcp_latency.getLatency(host_port, self.timeout)
+
+	def url_reachable(self, url):
+		r = url_check.isReachable(url, timeout=self.timeout)
+		if r == 0:
+			return 'OK'
+		elif r == -1:
+			return '**BAD RESP**'
+		else:
+			return '**BAD SRV**'
 
 class Monitor:
 	def __init__(self):
@@ -59,6 +69,9 @@ class Monitor:
 					self.servers[label][2] = self.ia.icmp(self.servers[label][0])
 				elif self.servers[label][1] == 'tcp':
 					self.servers[label][2] = self.ia.tcp(self.servers[label][0])
+				elif self.servers[label][1] == 'url':
+					self.servers[label][2] = self.ia.url_reachable(self.servers[label][0])
+
 			except:
 			## --- Bad protocol or port settings ---
 				print('**[Monitor::poll] Unknown protocol or bad input in label <%s>.' % label)

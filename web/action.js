@@ -1,4 +1,3 @@
-const SERVER = "ws://127.0.0.1:9696";
 const socket = new WebSocket(SERVER);
 
 var resp = null;
@@ -71,18 +70,20 @@ function closeAddServerModal() {
     document.getElementById('addServerModal').style.display = 'none';
 }
 
-function addServerIntoForm(info_array, add_from_web) {
+function addServerIntoForm(info_array, add_from_poll) {
     const table = document.getElementById('serverList');
     const newRow = table.insertRow(-1);
-    // Web: [host, port, protocol, desc]
-    // Poll: [host, port, protocol, desc, latency]
+    // Get from web form: [host, port, protocol, desc]
+    // Get from poll: [host, port, protocol, desc, latency]
     var host = info_array[0]
     const port = info_array[1]
     const proto = info_array[2]
     const desc = info_array[3]
     var lat = null;
-    if (add_from_web == true) {
-        if (info_array[4] >= 0) {
+    if (add_from_poll == true) {
+        if (info_array[2] == 'url') {
+            lat = info_array[4];
+        } else if (info_array[4] >= 0) {
             lat = `${(info_array[4] * 1000).toFixed(2)} ms`;
         } else {
             lat = 'X';
@@ -139,7 +140,7 @@ function onclick_submit_srv() {
     srv_info = getHostFromInput();
     // [host, port, protocol, desc]
     update_srv_list(srv_info, 0);
-    addServerIntoForm(srv_info, true);
+    addServerIntoForm(srv_info, false);
 }
 // --------------------
 //   - Button Action

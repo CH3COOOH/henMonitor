@@ -1,2 +1,5 @@
 icmp	google.com	GOOGLE
 tcp	www.baidu.com:443	BAIDU(HTTPS)
+url	https://www.baidu.com	(20240210-154240) BAIDU_HOMEPAGE
+url	http://badurl.xxx	(20240210-155236) 
+url	https://www.baidu.com/xxx12345	(20240210-155303) 
